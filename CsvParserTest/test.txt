@@ -1,0 +1,6 @@
+email,password,nick,avatar,clubId,agentId,device-id,device-model,device-name,device-osVersion,socks-host,socks-password,socks-port,socks-user
+asdf@asd.dgh,sdfghj345,snick,?????,345475,45568679,abc6f8a75fd5bb3d5f22b6f9958cdede3fc086c2,MA-7B91,"blabla"", 
+
+bla",abc"" 64bit,345.123.546.234,QQtn3gFz,64623,sEFvbsTH
+fghj@errty.mock,fghjkk345,formm,avatar,,,,,,,,,,
+

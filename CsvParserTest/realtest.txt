@@ -1,0 +1,2 @@
+email,password,nick,avatar,clubId,agentId,device-id,device-model,device-name,device-osVersion,socks-host,socks-password,socks-port,socks-user,customAvatar
+rfhsdg34dfs@gmail.com,hgt123nhR78,terrinvjh,106,609138,,3bc6f8a75fd5b13d5f22b6f3b58cdede3fc086c2,MA-7B91,"blabla, bla",abc 64bit,568.234.145.73,c4VK4n7TJNJKjXrBb839,65730,abc-lfg1-2-91,https://abc.io/fake-player-icons-ml/player_data_icons/9838283909834964.0.png
