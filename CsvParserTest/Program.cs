@@ -18,7 +18,7 @@ namespace CsvParser
             var parser = CsvParserBuilder.GetBuilder()
                 //.SetDefaultReader(new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes("abc,dnf,rtt"))))
                 //.SetDefaultReader(new StreamReader("./test.txt"))
-                .SetCustomReader((conf) => new DefaultReader3(new StreamReader("./test.txt"), conf))
+                .SetCustomReader((conf) => new DefaultReader(new StreamReader("./test.txt"), conf))
                 .SetDefaultShaper<Account>()
                 .Build();
 

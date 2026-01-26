@@ -1,60 +1,113 @@
-﻿namespace CsvParser.Reader
+﻿using System.Text;
+
+namespace CsvParser.Reader
 {
-    internal class DefaultReader : ReaderBase
+    public class DefaultReader : IReader
     {
         private readonly StreamReader _inputStream;
 
-        private LineExtractor.ExtractionRange[] buffer;
+        public ReaderConfiguration Configuration;
+
+        public char Separator => Configuration.Separator;
+        public char Escaper => Configuration.Escaper;
+
+        private int _realLength;
+
         public DefaultReader(StreamReader inputStream, ReaderConfiguration configuration)
-            :base(configuration)
         {
             _inputStream = inputStream;
-
-            buffer = new LineExtractor.ExtractionRange[Configuration.RecordLength];
+            _realLength = Configuration.RecordLength;
         }
 
-
-        public override async Task<Option<string[]>> ReadRecordAsync(CancellationToken cancellationToken = default)
+        public async Task<Option<string[]>> ReadRecordAsync(CancellationToken cancellationToken = default)
         {
-            var result = new List<string>(Configuration.RecordLength);
-
-            int extracted;
-            bool completed = false;
+            List<string> result = new(_realLength);
+            bool escaped = false;
+            StringBuilder accum = new();
+            string? line = null;
+            int nextStart = 0;
 
             do
             {
-                var line = await _inputStream.ReadLineAsync(cancellationToken);
-                if (line == null) return result.Count > 0 ? Option<string[]>.Some([.. result]) : Option<string[]>.None;
-                if (line.Length == 0 && result.Count == 0) continue;
+                line = await _inputStream.ReadLineAsync(cancellationToken);
+                if (line == null) return OnStreamEnd();
 
-                rerun_extraction:
-                (extracted, completed) = LineExtractor.ExtractFromLine(line, ref buffer, result.Count != 0, Separator, Escaper);
-
-                //dynamicaly adjust record length
-                if (!completed && extracted == buffer.Length)
+                nextStart = 0;
+                for (int i = 0; i < line.Length; i++)
                 {
-                    buffer = new LineExtractor.ExtractionRange[buffer.Length * 2];
-                    goto rerun_extraction;
+                    var sym = line[i];
+                    if (sym != Separator && sym != Escaper) continue;
+
+                    if (escaped)
+                    {
+                        if (sym == Separator) continue;
+
+                        if ((i + 1) < line.Length && line[i + 1] == Escaper)
+                        {
+                            Accumulate(i + 1);
+                            i++;
+                        }
+                        else
+                        {
+                            Accumulate(i);
+                            escaped = false;
+                        }
+
+                        continue;
+                    }
+
+                    if (sym == Escaper)
+                    {
+                        Accumulate(i);
+                        escaped = true;
+
+                        continue;
+                    }
+
+                    if (sym == Separator)
+                    {
+                        Accumulate(i);
+                        result.Add(accum.ToString());
+                        accum.Clear();
+                    }
                 }
 
-                //for escaped multiline record
-                if (result.Count != 0)
-                {
-                    result[^1] += '\n';
-                    result[^1] += line[buffer[0].Start..buffer[0].End];
-                }
+                Accumulate(line.Length);
 
-                for (var i = result.Count == 0 ? 0 : 1; i < extracted; i++)
+                if (!escaped)
                 {
-                    result.Add(line[buffer[i].Start..buffer[i].End]);
+                    result.Add(accum.ToString());
+                    accum.Clear();
+                }
+                else
+                {
+                    accum.Append('\n');
                 }
             }
-            while (!completed);
+            while (accum.Length > 0);
+
+            if (result.Count > _realLength) _realLength = result.Count;
 
             return Option<string[]>.Some([.. result]);
-        }
 
-        public override ValueTask DisposeAsync()
+
+
+            void Accumulate(int i)
+            {
+                accum.Append(line.AsSpan(nextStart, i - nextStart));
+                nextStart = i + 1;
+            }
+
+            Option<string[]> OnStreamEnd()
+            {
+                if (result.Count == 0) return Option<string[]>.None;
+
+                result.Add(accum.ToString());
+                return Option<string[]>.Some([.. result]);
+            }
+        }
+        
+        public ValueTask DisposeAsync()
         {
             _inputStream.Dispose();
             return ValueTask.CompletedTask;

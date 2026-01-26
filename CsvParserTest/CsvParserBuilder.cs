@@ -16,7 +16,7 @@ namespace CsvParser
     {
         public ISetShaperStep SetDefaultReader(StreamReader inputStream)
         {
-            return GetShaperStep(config => new DefaultReader3(inputStream, config));
+            return GetShaperStep(config => new DefaultReader(inputStream, config));
         }
 
         public ISetShaperStep SetCustomReader(Func<ReaderConfiguration, IReader> setuper)
