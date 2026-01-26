@@ -3,7 +3,7 @@ using CsvParser.Shaper;
 
 namespace CsvParser.Parser
 {
-    internal class CsvTypedParser<TOut> : CsvParserBase<TOut> where TOut : struct
+    internal class CsvTypedParser<TOut> : CsvParserBase<TOut>
     {
         public readonly IShaper<TOut> Shaper;
 

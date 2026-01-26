@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using CsvParser.Attributes;
+using System.Reflection;
 
 namespace CsvParser.Shaper
 {

@@ -11,6 +11,7 @@ namespace ParserTests
             var parser = CsvParserBuilder.GetBuilder()
                 .SetDefaultReader(input.AsStreamReader())
                 .SetDefaultShaper<Shaper>()
+                .HasHeaders()
                 .SetRecordLenegth(3)
                 .Build();
 
@@ -28,14 +29,11 @@ namespace ParserTests
         [TestCaseSource(typeof(ShapedTestsData), nameof(ShapedTestsData.TestCasesHeaderless))]
         public async Task<Shaper[]> ShapedTests_headerless(string input)
         {
-#pragma warning disable CS0618
             var parser = CsvParserBuilder.GetBuilder()
                 .SetDefaultReader(input.AsStreamReader())
                 .SetDefaultShaper<Shaper>()
                 .SetRecordLenegth(3)
-                .HasNoHeaders()
                 .Build();
-#pragma warning restore CS0618
 
             List<Shaper> result = [];
 
