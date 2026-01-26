@@ -1,4 +1,5 @@
 ﻿using CsvParser;
+using CsvParser.Attributes;
 
 namespace ParserTests
 {

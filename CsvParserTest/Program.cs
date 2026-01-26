@@ -1,4 +1,5 @@
 ﻿using CsvParser.Reader;
+using CsvParser.Attributes;
 using System.Text;
 using System.Text.Json;
 using System.Text.Unicode;

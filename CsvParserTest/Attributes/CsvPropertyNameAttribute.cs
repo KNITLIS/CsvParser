@@ -1,4 +1,4 @@
-﻿namespace CsvParser
+﻿namespace CsvParser.Attributes
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class CsvPropertyNameAttribute(string name) : Attribute
