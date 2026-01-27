@@ -1,6 +1,7 @@
 ﻿using CsvParser.Attributes;
 using System.Reflection;
 using System.Text;
+using CsvParser;
 
 namespace CsvParser
 {
@@ -47,24 +48,7 @@ namespace CsvParser
             return sb.ToString();
         }
 
-        private static PropertyInfo[] ExtractProps<T>()
-        {
-            var props = typeof(T).GetProperties();
-
-            props.Sort(static (a, b) =>
-            {
-                var ordA = a.GetCustomAttribute<CsvOrderAttribute>()?.Order;
-                var ordB = b.GetCustomAttribute<CsvOrderAttribute>()?.Order;
-
-                if (ordA == null && ordB == null) return a.Name.CompareTo(b.Name);
-
-                if (ordA == null) return 1;
-                if (ordB == null) return -1;
-
-                return ((int)ordA).CompareTo((int)ordB);
-            });
-
-            return props.ToArray();
-        }
+        private static PropertyInfo[] ExtractProps<T>() => 
+            TypeUtils.SortProps(TypeUtils.ExtractProps<T>());
     }
 }

@@ -1,5 +1,4 @@
-﻿using CsvParser.Attributes;
-using System.Reflection;
+﻿using System.Reflection;
 
 namespace CsvParser.Shaper
 {
@@ -15,7 +14,8 @@ namespace CsvParser.Shaper
             Configuration = configuration;
 
             _shapeProps = typeof(TShape).GetProperties();
-            _inputOrder = Enumerable.Range(0, _shapeProps.Length).ToArray();
+            _inputOrder = new int[_shapeProps.Length];
+            SetHeaders(TypeUtils.SortProps(_shapeProps).Select(TypeUtils.GetCsvName).ToArray());
         }
 
         public TShape Shape(string[] record)
@@ -40,12 +40,7 @@ namespace CsvParser.Shaper
         public void SetHeaders(string[] headersInOrder)
         {
             _inputOrder = new int[headersInOrder.Length];
-            var propNames = _shapeProps.Select(prop =>
-            {
-                var attr = Attribute.GetCustomAttribute(prop, typeof(CsvPropertyNameAttribute));
-
-                return attr == null ? prop.Name : ((CsvPropertyNameAttribute)attr).Name;
-            }).ToArray();
+            var propNames = _shapeProps.Select(TypeUtils.GetCsvName).ToArray();
 
             for (int i = 0; i < headersInOrder.Length; i++)
             {
