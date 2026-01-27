@@ -95,7 +95,7 @@ namespace CsvParser
 
         public ICsvParser<TShape> Build()
         {
-            return new CsvTypedParser<TShape>(rc(readerConf), parserConf, sc(shaperConf));
+            return new CsvParser<TShape>(rc(readerConf), parserConf, sc(shaperConf));
         }
     }
 

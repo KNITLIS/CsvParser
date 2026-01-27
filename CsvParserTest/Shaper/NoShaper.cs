@@ -1,14 +1,16 @@
 ﻿namespace CsvParser.Shaper
 {
-    public class NoShaper : ShaperBase<string[]>
+    public class NoShaper : IShaper<string[]>
     {
-        public NoShaper() : base(default) { }
+        public NoShaper() { }
 
-        public override void SetOrder(string[] headersOrder) { }
+        public void SetHeaders(string[] headersOrder) { }
 
-        public override string[] Shape(string[] record)
+        public string[] Shape(string[] record)
         {
             return record;
         }
+
+        public void Dispose() { }
     }
 }

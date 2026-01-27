@@ -16,6 +16,8 @@ namespace CsvParser.Reader
         public DefaultReader(StreamReader inputStream, ReaderConfiguration configuration)
         {
             _inputStream = inputStream;
+
+            Configuration = configuration;
             _realLength = Configuration.RecordLength;
         }
 

@@ -3,19 +3,26 @@ using CsvParser.Shaper;
 
 namespace CsvParser.Parser
 {
-    internal class CsvTypedParser<TOut> : CsvParserBase<TOut>
+    internal class CsvParser<TOut> : ICsvParser<TOut>
     {
+        public readonly ParserConfiguration Configuration;
+
+        public readonly IReader Reader;
         public readonly IShaper<TOut> Shaper;
+
+        public bool HasHeaders => Configuration.HasHeaders;
+        public string[] Headers { get; protected set; } = [];
 
         private bool _firstIteration = true;
 
-        internal CsvTypedParser(IReader reader, ParserConfiguration configuration, IShaper<TOut> shaper)
-            : base(reader, configuration) 
+        internal CsvParser(IReader reader, ParserConfiguration configuration, IShaper<TOut> shaper)
         {
+            Reader = reader;
+            Configuration = configuration;
             Shaper = shaper;
         }
 
-        public override async Task<Option<TOut>> GetRecord(CancellationToken cancellationToken = default)
+        public async Task<Option<TOut>> GetRecord(CancellationToken cancellationToken = default)
         {
             if (_firstIteration) await FirstIter(cancellationToken);
 
@@ -38,10 +45,22 @@ namespace CsvParser.Parser
                     if (!AreHeadersMatch()) throw new HeadersException("Headers doesn't match");
                 }
 
-                Shaper.SetOrder(Headers);
+                Shaper.SetHeaders(Headers);
             }
 
             _firstIteration = false;
+        }
+
+        public bool AreHeadersMatch() => new HashSet<string>(Headers).SetEquals(typeof(TOut).GetProperties().Select(prop => prop.Name));
+
+        public IAsyncEnumerator<TOut> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+        {
+            return new CsvParserAsyncEnumerator<TOut>(this, cancellationToken);
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return Reader.DisposeAsync();
         }
     }
 }

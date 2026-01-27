@@ -2,7 +2,7 @@
 {
     public interface IShaper<TShape> : IDisposable
     {
-        void SetOrder(string[] headersOrder);
+        void SetHeaders(string[] headersInOrder);
         TShape Shape(string[] record);
     }
 }

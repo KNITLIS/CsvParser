@@ -1,6 +1,6 @@
 ﻿namespace CsvParser.Parser
 {
-    internal class CsvParserAsyncEnumerator<TOut>(CsvParserBase<TOut> parser, CancellationToken cancellationToken) : IAsyncEnumerator<TOut>
+    internal class CsvParserAsyncEnumerator<TOut>(ICsvParser<TOut> parser, CancellationToken cancellationToken) : IAsyncEnumerator<TOut>
     {
         public TOut Current { get; private set; }
 
